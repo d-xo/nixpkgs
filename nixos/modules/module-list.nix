@@ -1901,6 +1901,7 @@
   ./tasks/network-interfaces-systemd.nix
   ./tasks/network-interfaces.nix
   ./tasks/powertop.nix
+  ./tasks/network-namespaces.nix
   ./tasks/scsi-link-power-management.nix
   ./tasks/stratis.nix
   ./tasks/swraid.nix
