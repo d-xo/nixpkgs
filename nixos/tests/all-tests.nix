@@ -240,6 +240,7 @@ in {
   convos = handleTest ./convos.nix {};
   corerad = handleTest ./corerad.nix {};
   coturn = handleTest ./coturn.nix {};
+  containers-writable-apivfs = handleTest ./containers-writeable-apivfs.nix {};
   couchdb = handleTest ./couchdb.nix {};
   crabfit = handleTest ./crabfit.nix {};
   cri-o = handleTestOn ["aarch64-linux" "x86_64-linux"] ./cri-o.nix {};

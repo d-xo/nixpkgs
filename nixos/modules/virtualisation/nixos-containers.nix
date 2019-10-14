@@ -657,6 +657,18 @@ in
               '';
             };
 
+           writableAPIVFS = mkOption {
+              type = types.enum [ true false "network" ];
+              default = false;
+              example = "network";
+              description = ''
+                If <literal>true</literal>, make <literal>/sys</literal> and
+                <literal>/proc/sys</literal> and friends writable in the
+                container. If set to <literal>network</literal>, leave only
+                <literal>/proc/sys/net</literal> writable.
+              '';
+            };
+
             interfaces = mkOption {
               type = types.listOf types.str;
               default = [];
@@ -926,6 +938,12 @@ in
               MACVLANS="${toString cfg.macvlans}"
               ${optionalString cfg.autoStart ''
                 AUTO_START=1
+              ''}
+              ${optionalString (cfg.writableAPIVFS == true) ''
+                SYSTEMD_NSPAWN_API_VFS_WRITABLE=1
+              ''}
+              ${optionalString (cfg.writableAPIVFS == "network") ''
+                SYSTEMD_NSPAWN_API_VFS_WRITABLE="${cfg.writableAPIVFS}"
               ''}
               ${optionalString (cfg.networkNamespace != null) ''
                 NETWORK_NAMESPACE="${cfg.networkNamespace}"
