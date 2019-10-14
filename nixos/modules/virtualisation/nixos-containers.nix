@@ -115,6 +115,10 @@ let
         extraFlags+=("--private-network")
       fi
 
+      if [ -n "$NETWORK_NAMESPACE" ]; then
+        extraFlags+=("--network-namespace-path=/run/netns/$NETWORK_NAMESPACE")
+      fi
+
       if [ -n "$HOST_ADDRESS" ]  || [ -n "$LOCAL_ADDRESS" ] ||
          [ -n "$HOST_ADDRESS6" ] || [ -n "$LOCAL_ADDRESS6" ]; then
         extraFlags+=("--network-veth")
@@ -528,6 +532,13 @@ in
                                 Names containing underscores are not allowed in nixos-containers. Please rename the container '${name}'
                               '';
                             }
+                            {
+                              assertion =  (config.privateNetwork || length config.interfaces != 0) -> config.networkNamespace == null;
+                              message = ''
+                                `networkNamespace` cannot be set if `privateNetwork` is enabled, or if `interfaces` is not empty
+>>>>>>> 028942441f9a (nixos/containers: allow spawning containers in an existing netns)
+                              '';
+                            }
                           ];
                         };
                       };
@@ -629,6 +640,20 @@ in
                 on the host.  If this option is not set, then the
                 container shares the network interfaces of the host,
                 and can bind to any port on any interface.
+              '';
+            };
+
+            networkNamespace = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              example = "physical";
+              description = ''
+                The name of the network namespace that the container will be
+                run in. The namespace must have already been created (e.g. with
+                <option>networking.namespaces</option> or <literal>ip netns
+                add</literal>. Note that this option is incompatible with
+                <option>containers.&lt;name&gt;.privateNetwork</option> and
+                <option>containers.&lt;name&gt;.interfaces</option>.
               '';
             };
 
@@ -901,6 +926,9 @@ in
               MACVLANS="${toString cfg.macvlans}"
               ${optionalString cfg.autoStart ''
                 AUTO_START=1
+              ''}
+              ${optionalString (cfg.networkNamespace != null) ''
+                NETWORK_NAMESPACE="${cfg.networkNamespace}"
               ''}
               EXTRA_NSPAWN_FLAGS="${mkBindFlags cfg.bindMounts +
                 optionalString (cfg.extraFlags != [])
