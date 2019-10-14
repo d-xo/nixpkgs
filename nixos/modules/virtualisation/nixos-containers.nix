@@ -746,6 +746,18 @@ in
                 '';
               };
 
+           writableAPIVFS = mkOption {
+              type = types.enum [ true false "network" ];
+              default = false;
+              example = "network";
+              description = ''
+                If <literal>true</literal>, make <literal>/sys</literal> and
+                <literal>/proc/sys</literal> and friends writable in the
+                container. If set to <literal>network</literal>, leave only
+                <literal>/proc/sys/net</literal> writable.
+              '';
+            };
+
               interfaces = mkOption {
                 type = types.listOf types.str;
                 default = [ ];
@@ -1125,13 +1137,17 @@ in
                 ${optionalString cfg.autoStart ''
                   AUTO_START=1
                 ''}
-                EXTRA_NSPAWN_FLAGS="${
-                  mkBindFlags cfg.bindMounts
-                  + optionalString (cfg.extraFlags != [ ]) (" " + concatStringsSep " " cfg.extraFlags)
-                }"
-              '';
-            }
-          ) config.containers;
+                ${optionalString (cfg.writableAPIVFS == true) ''
+                  SYSTEMD_NSPAWN_API_VFS_WRITABLE=1
+                ''}
+                ${optionalString (cfg.writableAPIVFS == "network") ''
+                  SYSTEMD_NSPAWN_API_VFS_WRITABLE="${cfg.writableAPIVFS}"
+                ''}
+                EXTRA_NSPAWN_FLAGS="${mkBindFlags cfg.bindMounts +
+                  optionalString (cfg.extraFlags != [])
+                    (" " + concatStringsSep " " cfg.extraFlags)}"
+                '';
+            }) config.containers;
 
         # Generate /etc/hosts entries for the containers.
         networking.extraHosts = concatStrings (
