@@ -9084,6 +9084,8 @@ in
 
   trousers = callPackage ../tools/security/trousers { };
 
+  trueblocks-core = callPackage ../applications/blockchains/trueblocks-core.nix {};
+
   trx = callPackage ../tools/audio/trx { };
 
   tryton = callPackage ../applications/office/tryton { };
