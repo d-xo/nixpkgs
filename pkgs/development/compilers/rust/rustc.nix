@@ -8,6 +8,7 @@
 , withBundledLLVM ? false
 , enableRustcDev ? true
 , version
+, nightly ? false
 , sha256
 , patches ? []
 }:
@@ -15,12 +16,16 @@
 let
   inherit (lib) optionals optional optionalString concatStringsSep;
   inherit (darwin.apple_sdk.frameworks) Security;
+  #url = if nightly
+        #then "https://static.rust-lang.org/dist/${version}/rustc-nightly-src.tar.xz"
+        #else "https://static.rust-lang.org/dist/rustc-${version}-src.tar.gz";
+  url = "https://static.rust-lang.org/dist/rustc-${version}-src.tar.gz";
 in stdenv.mkDerivation rec {
   pname = "rustc";
   inherit version;
 
   src = fetchurl {
-    url = "https://static.rust-lang.org/dist/rustc-${version}-src.tar.gz";
+    url = url;
     inherit sha256;
   };
 
@@ -60,7 +65,7 @@ in stdenv.mkDerivation rec {
     ccForTarget  = "${pkgsBuildTarget.targetPackages.stdenv.cc}/bin/${pkgsBuildTarget.targetPackages.stdenv.cc.targetPrefix}cc";
     cxxForTarget = "${pkgsBuildTarget.targetPackages.stdenv.cc}/bin/${pkgsBuildTarget.targetPackages.stdenv.cc.targetPrefix}c++";
   in [
-    "--release-channel=stable"
+    (if nightly then "--release-channel=nightly" else "--release-channel=stable")
     "--set=build.rustc=${rustPlatform.rust.rustc}/bin/rustc"
     "--set=build.cargo=${rustPlatform.rust.cargo}/bin/cargo"
     "--enable-rpath"
@@ -119,6 +124,7 @@ in stdenv.mkDerivation rec {
   inherit patches;
 
   postPatch = ''
+    ls .
     patchShebangs src/etc
 
     ${optionalString (!withBundledLLVM) "rm -rf src/llvm"}

@@ -1,6 +1,7 @@
 { rustcVersion
 , rustcSha256
 , enableRustcDev ? true
+, nightly ? false
 , bootstrapVersion
 , bootstrapHashes
 , selectRustPackage
@@ -63,6 +64,7 @@ in
       rustc = self.callPackage ./rustc.nix ({
         version = rustcVersion;
         sha256 = rustcSha256;
+        nightly = nightly;
         inherit enableRustcDev;
         inherit llvmShared llvmSharedForBuild llvmSharedForHost llvmSharedForTarget llvmPackages;
 
