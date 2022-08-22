@@ -31,6 +31,10 @@ rustPlatform.buildRustPackage {
   # fixes: the cargo feature `edition` requires a nightly version of Cargo, but this is the `stable` channel
   RUSTC_BOOTSTRAP = 1;
 
+  configureFlags = [
+    "--release-channel=nightly"
+  ];
+
   postInstall = ''
     # NOTE: We override the `http.cainfo` option usually specified in
     # `.cargo/config`. This is an issue when users want to specify
