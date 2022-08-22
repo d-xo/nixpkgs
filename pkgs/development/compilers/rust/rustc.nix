@@ -171,6 +171,9 @@ in stdenv.mkDerivation rec {
 
     # remove uninstall script that doesn't really make sense for Nix.
     rm $out/lib/rustlib/uninstall.sh
+  '' + ''
+    # move rust src to the location cargo expects it
+    mv $out/lib/rustlib/rustc-src $out/lib/rustlib/src
   '';
 
   configurePlatforms = [];
