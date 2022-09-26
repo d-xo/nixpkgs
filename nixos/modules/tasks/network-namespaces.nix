@@ -18,8 +18,8 @@ with lib; {
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.iproute}/bin/ip netns add ${strings.escapeShellArg netns}";
-        ExecStop = "${pkgs.iproute}/bin/ip netns del ${strings.escapeShellArg netns}";
+        ExecStart = "${pkgs.iproute2}/bin/ip netns add ${strings.escapeShellArg netns}";
+        ExecStop = "${pkgs.iproute2}/bin/ip netns del ${strings.escapeShellArg netns}";
       };
     };
   }) config.networking.namespaces);
