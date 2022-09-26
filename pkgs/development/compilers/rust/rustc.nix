@@ -173,7 +173,20 @@ in stdenv.mkDerivation rec {
     rm $out/lib/rustlib/uninstall.sh
   '' + ''
     # move rust src to the location cargo expects it
-    mv $out/lib/rustlib/rustc-src $out/lib/rustlib/src
+    tar -xzf ${src}
+    mv rustc-${version}-src $out/lib/rustlib/src
+    rm -rf $out/lib/rustlib/src/{${lib.concatStringsSep "," ([
+      "ci"
+      "doc"
+      "etc"
+      "grammar"
+      "llvm-project"
+      "llvm-emscripten"
+      "rtstartup"
+      "rustllvm"
+      "test"
+      "vendor"
+    ])}}
   '';
 
   configurePlatforms = [];
