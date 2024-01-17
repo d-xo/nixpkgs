@@ -22,8 +22,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "bitwuzla";
     repo = "bitwuzla";
-    rev = "${version}";
-    hash = "sha256-9XPcFkct7Bazso7kDlxQSbGbhQhv4V4qsp7PWHaWjQE=";
+    rev = "c8b2c13924bbf80f75a29047e18873a5897f6b26";
+    hash = "sha256-ASIF2Ov1RJcxueALHorMuGibd2qTpAj1fziq0QFVfNk=";
   };
 
   nativeBuildInputs = [ python3 meson ninja pkg-config git gtest ];
